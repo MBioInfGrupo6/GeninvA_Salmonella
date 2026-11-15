@@ -1,1 +1,47 @@
 Resultados de Proyecto
+# Resultados del Análisis y Control de Calidad (QC)
+
+Esta carpeta contiene todos los productos generados por el pipeline de procesamiento y análisis exploratorio de la colección de aislamientos de *Salmonella enterica*.
+
+---
+
+## 1. Trazabilidad del Control de Calidad (QC)
+El proceso de depuración y filtrado aplicado a través del script `R/02_qc.R` se documenta en el archivo de trazabilidad: [`tablas/log_control_calidad.csv`](tablas/log_control_calidad.csv).
+
+* **Registros iniciales de entrada:** 1.325 aislamientos.
+* **Duplicados eliminados:** 25 registros.
+* **Registros filtrados por año mínimo (< 2015):** 56 registros.
+* **Colección final depurada:** **1.244 registros** (93,89% de retención), listos para el análisis estadístico y ecológico.
+
+---
+
+## 2. Análisis Exploratorio y Visualización (Figuras)
+
+Las siguientes gráficas resumen la distribución de la colección bajo los estándares del proyecto:
+
+### Serovares más frecuentes
+![Serovares frecuentes](figuras/01_serovares_frecuentes.png)
+* **Interpretación:** La colección está claramente dominada por ***Salmonella* Typhimurium** y ***Salmonella* Enteritidis** (ambas superando los 250 aislamientos), seguidas por grupos como *Infantis*, *Newport* y *Heidelberg*.
+
+### Distribución temporal
+![Aislamientos por año](figuras/02_aislamientos_por_anio.png)
+* **Interpretación:** Se observa un crecimiento constante en el volumen de aislamientos desde 2015, alcanzando un **pico máximo en el año 2022**, seguido de una modesta estabilización en los años recientes.
+
+### Distribución geográfica
+![Distribución geográfica](figuras/03_distribucion_paises.png)
+* **Interpretación:** Los países con mayor representación en la base de datos son **Colombia** y **Estados Unidos (USA)**, seguidos por **España**, **Brasil** y **México**, lo que refleja un sesgo hacia regiones con sistemas consolidados de vigilancia genómica.
+
+### Dinámica temporal por serovar (Mapa de calor)
+![Serovares por año](figuras/04_serovar_por_anio.png)
+* **Interpretación:** *Typhimurium* y *Enteritidis* muestran una presencia constante y de alta densidad a lo largo de prácticamente todo el periodo de estudio.
+
+En conjunto, la colección está dominada por los serovares Salmonella Typhimurium y Salmonella Enteritidis, que presentan las frecuencias más elevadas, seguidos por Infantis, Newport y Heidelberg. Sin embargo, la distribución de los aislamientos no es homogénea. Se observa un posible sesgo geográfico, debido a la mayor representación de determinados países, especialmente Colombia y Estados Unidos. Asimismo, la distribución temporal puede estar condicionada por diferencias en la disponibilidad de datos y en la intensidad de la vigilancia genómica a lo largo de los años. Por tanto, los resultados describen la composición de la colección analizada, pero no necesariamente reflejan la prevalencia real de los serovares ni su distribución global.
+---
+
+## 3. Tablas Descriptivas y Diversidad
+En la carpeta [`tablas/](tablas/) se encuentran disponibles los archivos CSV con los datos tabulados:
+* `frecuencia_serovares.csv`: Conteos y porcentajes de cada serovar.
+* `aislamientos_por_anio.csv`: Frecuencias anuales.
+* `aislamientos_por_pais.csv`: Distribución por países.
+* `fuentes_aislamiento.csv`: Origen de las cepas.
+* `indices_diversidad.csv`: Métricas ecológicas calculadas para la colección (incluyendo riqueza de serovares, índice de **Shannon** e índice de **Simpson**).
