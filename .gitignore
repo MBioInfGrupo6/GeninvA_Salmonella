@@ -1,7 +1,9 @@
 # Project specific
 data/raw/
 data/processed/
-resultados/
+
+# Ignore generated RDS files
+*.rds
 
 # History files
 .Rhistory
