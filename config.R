@@ -8,6 +8,9 @@ config <- list(
   filtro_anio_min    = 2015,
   filtro_serovar     = NULL,
   filtro_fuente      = NULL,
+  qc_eliminar_duplicados  = TRUE
+  qc_anio_minimo_valido  = 1950
+  filtro_anio_max  = NULL
   qc_min_campos_completos  = 3,
   n_cepas_propuestas = 20,
   pesos = list(
