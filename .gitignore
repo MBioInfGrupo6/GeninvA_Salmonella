@@ -53,4 +53,7 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+<<<<<<< HEAD
 .positai
+=======
+>>>>>>> origin/main
