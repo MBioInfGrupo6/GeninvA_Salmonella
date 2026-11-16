@@ -11,9 +11,9 @@ config <- list(
   filtro_serovar     = NULL,
   filtro_fuente      = NULL,
 ## --- Control de calidad ------
-  qc_eliminar_duplicados  = TRUE
-  qc_anio_minimo_valido  = 1950
-  filtro_anio_max  = NULL
+  qc_eliminar_duplicados  = TRUE,
+  qc_anio_minimo_valido  = 1950,
+  filtro_anio_max  = NULL,
   qc_min_campos_completos  = 3,
 ## --- Selección de cepas -----
   n_cepas_propuestas = 20,
