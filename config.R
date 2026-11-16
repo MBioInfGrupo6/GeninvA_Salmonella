@@ -25,13 +25,13 @@ config <- list(
     metadatos         = 0.20,
     disponibilidad    = 0.10
   ),
-# Máximo de cepas por serovar en la propuesta final
+##-- Máximo de cepas por serovar en la propuesta final
   max_por_serovar = 3,
-# Máximo de cepas por clúster genómico
+##-- Máximo de cepas por clúster genómico
   max_por_cluster = 2,
   semilla = 1234
 )
-## Pesos: comprobación
+##-- Pesos: comprobación
 if (abs(sum(unlist(config$pesos)) - 1) > 1e-8) {
   warning("Los pesos de config$pesos no suman 1. Revísalos.")
 }
