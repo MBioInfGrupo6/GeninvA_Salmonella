@@ -1,0 +1,188 @@
+---
+title: "Selección de cepas candidatas de *Salmonella* a partir de bases de datos públicas"
+subtitle: "Introducción a la Programación Científica — UNIR"
+author: "Equipo del proyecto"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: flatly
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 9, fig.height = 5.5, dpi = 150)
+if (basename(getwd()) == "reporte") knitr::opts_knit$set(root.dir = "..")
+```
+
+```{r cargar}
+source("config.R")
+options(salmonella.skip_install = TRUE)
+source("R/00_setup.R")
+
+# Las figuras se incrustan en el HTML como data URI. Así el informe se ve
+# igual tanto si lo generas con rmarkdown::render() como con el botón «Knit»,
+# sin depender de la carpeta desde la que pandoc resuelve las rutas.
+mostrar_figura <- function(nombre, ancho = "100%") {
+  ruta <- file.path(config$dir_figuras, nombre)
+  if (!file.exists(ruta)) {
+    return(knitr::asis_output(paste0("*(figura no disponible: ", nombre,
+                                     " — ejecuta scripts/run_all.R)*")))
+  }
+  knitr::asis_output(sprintf('<img src="%s" style="width:%s;" alt="%s">',
+                             knitr::image_uri(ruta), ancho, nombre))
+}
+
+ruta <- file.path(config$dir_processed, "resultados.rds")
+if (!file.exists(ruta)) stop("Ejecuta antes scripts/run_all.R")
+res <- readRDS(ruta)
+datos <- res$datos
+```
+
+# Introducción
+
+*Salmonella enterica* es uno de los principales agentes de enfermedades
+transmitidas por alimentos y un reservorio relevante de determinantes de
+resistencia a antimicrobianos. Los repositorios públicos de vigilancia genómica
+acumulan hoy un volumen de aislamientos anotados que permite describir la
+diversidad circulante y seleccionar, de forma trazable, colecciones de trabajo.
+
+Este informe documenta el flujo de análisis aplicado sobre datos descargados de
+bases públicas y la propuesta razonada de un conjunto de cepas candidatas.
+
+## Objetivo
+
+Proponer, mediante un sistema de puntuación multicriterio reproducible, un
+conjunto de `r config$n_cepas_propuestas` aislamientos ya registrados en bases
+públicas que sirvan como colección de referencia para vigilancia y estudios
+comparativos.
+
+## Origen de los datos
+
+```{r origen}
+reg <- file.path(config$dir_raw, "REGISTRO_DESCARGAS.md")
+if (file.exists(reg)) cat(readLines(reg), sep = "\n")
+```
+
+# Material y métodos
+
+El proyecto se organiza en ocho etapas encadenadas
+(`scripts/run_all.R`): verificación de archivos, carga e integración, control de
+calidad, análisis descriptivo, perfil de resistencia y virulencia, tipificación y
+agrupamiento, puntuación multicriterio e informe.
+
+Todo el análisis parte de **datos secundarios ya publicados y anotados por los
+repositorios**: no se realiza ensamblado *de novo* ni predicción nueva de
+fenotipos. La selección de cepas consiste en identificar registros existentes que
+cumplen los criterios definidos.
+
+## Criterios y pesos
+
+```{r pesos}
+tibble::tibble(
+  Criterio = c("Representatividad", "Diversidad genómica", "Interés en RAM",
+               "Calidad de metadatos", "Disponibilidad de genoma"),
+  Peso = unlist(config$pesos)
+) |> knitr::kable(digits = 2)
+```
+
+# Resultados
+
+## Control de calidad
+
+```{r qc}
+knitr::kable(res$qc$log, caption = "Trazabilidad del control de calidad")
+```
+
+Tras la depuración se conservaron
+**`r format(nrow(datos), big.mark = ".", decimal.mark = ",")`** aislamientos.
+
+## Composición de la colección
+
+```{r descriptivo}
+knitr::kable(head(res$descriptivo$serovares, 15),
+             caption = "Serovares más frecuentes")
+knitr::kable(res$descriptivo$diversidad,
+             caption = "Índices de diversidad de serovares")
+```
+
+```{r fig-serovares, fig.cap="Serovares más frecuentes"}
+mostrar_figura("01_serovares_frecuentes.png")
+```
+
+```{r fig-anio, fig.cap="Distribución temporal"}
+mostrar_figura("02_aislamientos_por_anio.png")
+```
+
+## Perfil de resistencia
+
+```{r ram, eval=!is.null(res$ram$genes)}
+knitr::kable(head(res$ram$genes, 20),
+             caption = "Determinantes de RAM declarados con mayor prevalencia")
+```
+
+```{r fig-ram, fig.cap="Mapa de calor de prevalencia por serovar"}
+mostrar_figura("06_mapa_calor_ram.png")
+```
+
+## Agrupamiento
+
+```{r fig-dendro, fig.cap="Similitud de serovares según su perfil de determinantes"}
+mostrar_figura("08_dendrograma_perfiles_ram.png")
+```
+
+## Cepas propuestas
+
+```{r propuestas}
+res$seleccion$propuestas |>
+  dplyr::select(ranking, id_aislamiento, serovar, pais, anio, fuente,
+                grupo_genomico, n_genes_ram, puntuacion) |>
+  knitr::kable(caption = "Cepas candidatas propuestas, ordenadas por puntuación")
+```
+
+```{r fig-sel, fig.cap="Puntuación de las cepas propuestas"}
+mostrar_figura("09_cepas_propuestas.png")
+```
+
+### Justificación individual
+
+```{r justificacion, results='asis'}
+prop <- res$seleccion$propuestas
+for (i in seq_len(nrow(prop))) {
+  cat("- **", prop$id_aislamiento[i], "** (", prop$puntuacion[i], " pts): ",
+      prop$justificacion[i], "\n", sep = "")
+}
+```
+
+# Discusión
+
+Los resultados describen la composición de la colección descargada y permiten
+contrastar la diversidad de serovares con la prevalencia de determinantes de
+resistencia declarados. La propuesta final equilibra representatividad y
+diversidad: los cupos por serovar y por grupo genómico evitan seleccionar
+aislamientos casi idénticos, de modo que el panel resultante cubre varios linajes
+en lugar de concentrarse en el más abundante.
+
+**Limitaciones.** Los repositorios presentan sesgo de muestreo (los países y
+sectores con más capacidad de secuenciación están sobrerrepresentados), los
+metadatos son incompletos en una fracción de los registros, y el genotipo
+declarado no equivale a un fenotipo de resistencia confirmado en laboratorio.
+La disponibilidad física de un aislamiento depende además de la colección que lo
+custodia.
+
+# Conclusiones
+
+1. El flujo implementado permite pasar de archivos crudos descargados a una
+   propuesta trazable de cepas en una sola ejecución.
+2. La puntuación multicriterio hace explícitos los criterios de selección y
+   permite reproducir o modificar la decisión cambiando únicamente `config.R`.
+3. El proyecto queda versionado en Git, con el reparto de tareas documentado.
+
+# Información de la sesión
+
+```{r sesion}
+sessionInfo()
+```
