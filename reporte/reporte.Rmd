@@ -1,7 +1,7 @@
 ---
-title: "Selección de cepas candidatas de *Salmonella* a partir de bases de datos públicas"
+title: "Analisis Bioinformatico para la comparacion del gen invA entre cepas de Salmonella enterica"
 subtitle: "Introducción a la Programación Científica — UNIR"
-author: "Equipo del proyecto"
+author: "Equipo 6"
 date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output:
   html_document:
@@ -179,9 +179,6 @@ custodia.
    propuesta trazable de cepas en una sola ejecución.
 2. La puntuación multicriterio hace explícitos los criterios de selección y
    permite reproducir o modificar la decisión cambiando únicamente `config.R`.
-3. El proyecto queda versionado en Git, con el reparto de tareas documentado.
-
-# Información de la sesión
 
 ```{r sesion}
 sessionInfo()
